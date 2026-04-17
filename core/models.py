@@ -28,9 +28,9 @@ class Source(BaseModel):
     relevance_score: float
 
 class QueryResponse(BaseModel):
-    title: str
-    category: str
-    chunk_count: int
+    question: str
+    answer: str
+    sources: List[Source]
 
 class DocumentInfo(BaseModel):
     title: str

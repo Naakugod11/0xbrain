@@ -58,7 +58,7 @@ def ask(question: str, top_k: int = None, category_filter: str = None) -> QueryR
     ]
 
     return QueryResponse(
-        quesion=question,
+        question=question,
         answer=answer,
         sources=sources,
     )

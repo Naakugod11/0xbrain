@@ -4,11 +4,10 @@ from core.config import settings
 from core.models import DocumentChunk
 from services.embedding import embed_text, embed_batch
 
-# persistent local storage - survives server restarts
-client = chromadb.Client(ChromaSettings(
-    persist_directory=settings.chroma_persist_dir,
-    anonymized_telemetry=False,
-))
+# PersistentClient saves to disk — survives server restarts.
+client = chromadb.PersistentClient(
+    path=settings.chroma_persist_dir,
+)
 
 # measures angle between vectors for the fast nearest-neoghbor search algo
 collection = client.get_or_create_collection(
