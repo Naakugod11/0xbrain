@@ -31,3 +31,8 @@ class QueryResponse(BaseModel):
     title: str
     category: str
     chunk_count: int
+
+class DocumentInfo(BaseModel):
+    title: str
+    category: str
+    chunk_count: int
