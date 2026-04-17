@@ -16,11 +16,11 @@ collection = client.get_or_create_collection(
 )
 
 def add_chunks(chunks: list[DocumentChunk], title: str, category: str = "general"):
-    """Add document chunks to the vector store."""
+    """Add document chunks to the vector store. Uses upsert to avoid duplicates"""
     texts = [chunk.content for chunk in chunks]
     embeddings = embed_batch(texts)
 
-    collection.add(
+    collection.upsert(
         ids=[f"{title}_{chunk.chunk_index}" for chunk in chunks],
         documents=texts,
         embeddings=embeddings,
