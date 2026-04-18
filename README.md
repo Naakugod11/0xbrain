@@ -1,6 +1,6 @@
 # 0xbrain
 
-Crypto knowledge engine — ask anything about protocols, get sourced answers from whitepapers and technical docs. No hallucination.
+Crypto knowledge engine — ask anything about protocols, get sourced answers from whitepapers and technical docs. Grounded answers from source documents.
 
 ## What is this?
 
