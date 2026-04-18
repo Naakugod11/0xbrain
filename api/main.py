@@ -6,17 +6,17 @@ from api.routes import router
 from services.vector_store import list_documents
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    docs = list_documents()
-    if len(docs) == 0:
-        print("🧠 Knowledge base empty — running batch ingestion...")
-        from ingestion.batch_ingest import run
-        run()
-        print("🧠 Ingestion complete")
-    else:
-        print(f"🧠 Knowledge base loaded: {len(docs)} docs")
-    yield
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     docs = list_documents()
+#     if len(docs) == 0:
+#         print("🧠 Knowledge base empty — running batch ingestion...")
+#         from ingestion.batch_ingest import run
+#         run()
+#         print("🧠 Ingestion complete")
+#     else:
+#         print(f"🧠 Knowledge base loaded: {len(docs)} docs")
+#     yield
 
 
 app = FastAPI(
