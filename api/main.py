@@ -4,16 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from api.routes import router
 from services.vector_store import list_documents
-import subprocess
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # On startup: ingest if knowledge base is empty
     docs = list_documents()
     if len(docs) == 0:
         print("🧠 Knowledge base empty — running batch ingestion...")
-        subprocess.run(["python3", "ingestion/batch_ingest.py"], env={"PYTHONPATH": "."})
+        from ingestion.batch_ingest import run
+        run()
         print("🧠 Ingestion complete")
     else:
         print(f"🧠 Knowledge base loaded: {len(docs)} docs")
