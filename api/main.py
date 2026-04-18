@@ -23,7 +23,7 @@ app = FastAPI(
     title="0xbrain",
     description="RAG system for crypto knowledge",
     version="0.1.0",
-    lifespan=lifespan,
+    # lifespan=lifespan,
 )
 
 app.add_middleware(
