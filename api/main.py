@@ -40,13 +40,3 @@ app.mount("/demo", StaticFiles(directory="frontend", html=True), name="demo")
 @app.get("/health")
 async def health():
     return {"status": "alive"}
-
-@router.post("/ingest/batch")
-async def batch_ingest():
-    """Trigger batch ingestion of all whitepapers."""
-    try:
-        from ingestion.batch_ingest import run
-        run()
-        return {"status": "complete", "documents": list_documents()}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")

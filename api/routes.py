@@ -63,3 +63,13 @@ async def documents():
     """List all documents in the knowledge base."""
     docs = list_documents()
     return [DocumentInfo(**doc) for doc in docs]
+
+@router.post("/ingest/batch")
+async def batch_ingest():
+    """Trigger batch ingestion of all whitepapers."""
+    try:
+        from ingestion.batch_ingest import run
+        run()
+        return {"status": "complete", "documents": list_documents()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
