@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
     docs = list_documents()
     if len(docs) == 0:
         print("🧠 Knowledge base empty — running batch ingestion...")
-        subprocess.run(["python", "ingestion/batch_ingest.py"], env={"PYTHONPATH": "."})
+        subprocess.run(["python3", "ingestion/batch_ingest.py"], env={"PYTHONPATH": "."})
         print("🧠 Ingestion complete")
     else:
         print(f"🧠 Knowledge base loaded: {len(docs)} docs")
