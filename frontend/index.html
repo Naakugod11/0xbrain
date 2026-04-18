@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0xbrain</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0d10;
+            --surface: #131419;
+            --surface-2: #181920;
+            --border: #222330;
+            --border-light: #2e3040;
+            --text: #a6a8b8;
+            --text-bright: #e0e2f0;
+            --text-dim: #4d4f60;
+            --accent: #4ade80;
+            --accent-bright: #6ee7a0;
+            --accent-soft: rgba(74, 222, 128, 0.05);
+            --accent-mid: rgba(74, 222, 128, 0.12);
+            --accent-glow: 0 0 40px rgba(74, 222, 128, 0.08);
+            --accent-glow-strong: 0 0 60px rgba(74, 222, 128, 0.12), 0 0 120px rgba(74, 222, 128, 0.04);
+            --success: #4ade80;
+            --error: #f87171;
+        }
+ 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inconsolata', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+ 
+        .vec-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+ 
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 740px;
+            margin: 0 auto;
+            padding: 72px 24px 48px;
+        }
+ 
+        .header {
+            margin-bottom: 44px;
+            animation: fadeUp 0.5s ease-out;
+        }
+ 
+        .header-eyebrow {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            opacity: 0.8;
+        }
+ 
+        .header h1 {
+            font-size: 3.4rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+ 
+        .header h1 .zero {
+            color: var(--accent);
+            text-shadow: var(--accent-glow-strong);
+        }
+ 
+        .header-desc {
+            margin-top: 16px;
+            font-size: 0.92rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            max-width: 480px;
+        }
+ 
+        .stats {
+            display: flex;
+            gap: 24px;
+            padding: 14px 18px;
+            margin-bottom: 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            animation: fadeUp 0.5s ease-out 0.06s both;
+        }
+ 
+        .stat-item { display: flex; align-items: center; gap: 7px; }
+ 
+        .stat-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+        }
+ 
+        .stat-dot.on {
+            background: var(--success);
+            box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+        }
+ 
+        .stat-dot.off { background: var(--error); }
+ 
+        .search-section {
+            margin-bottom: 28px;
+            animation: fadeUp 0.5s ease-out 0.12s both;
+        }
+ 
+        .search-box { position: relative; }
+ 
+        .search-input {
+            width: 100%;
+            padding: 20px 22px;
+            padding-right: 120px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-bright);
+            font-family: 'Inconsolata', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+ 
+        .search-input:focus {
+            border-color: rgba(74, 222, 128, 0.4);
+            box-shadow: var(--accent-glow);
+        }
+ 
+        .search-input::placeholder { color: var(--text-dim); }
+ 
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px 24px;
+            background: var(--accent);
+            border: none;
+            border-radius: 7px;
+            color: var(--bg);
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: box-shadow 0.2s, opacity 0.2s;
+        }
+ 
+        .search-btn:hover {
+            box-shadow: 0 0 24px rgba(74, 222, 128, 0.2);
+        }
+ 
+        .search-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+ 
+        .search-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+ 
+        .filter-group { display: flex; align-items: center; gap: 6px; }
+ 
+        .filter-select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: var(--text);
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.78rem;
+            padding: 5px 10px;
+            outline: none;
+        }
+ 
+        .rag-badge {
+            padding: 4px 10px;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-mid);
+            border-radius: 5px;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+ 
+        .loading { display: none; padding: 36px 0; text-align: center; }
+        .loading.visible { display: block; }
+ 
+        .loading-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+ 
+        .loading-bar {
+            height: 2px;
+            background: var(--border);
+            border-radius: 1px;
+            overflow: hidden;
+            max-width: 220px;
+            margin: 0 auto;
+        }
+ 
+        .loading-bar::after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 30%;
+            background: var(--accent);
+            border-radius: 1px;
+            animation: loadSlide 1.3s ease-in-out infinite;
+        }
+ 
+        .answer-section { display: none; animation: fadeUp 0.4s ease-out; }
+        .answer-section.visible { display: block; }
+ 
+        .answer-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            opacity: 0.85;
+        }
+ 
+        .answer-body {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 2px solid rgba(74, 222, 128, 0.5);
+            border-radius: 0 10px 10px 0;
+            padding: 26px;
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--text);
+        }
+ 
+        .answer-body strong { color: var(--text-bright); }
+ 
+        .answer-body h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin: 22px 0 8px;
+        }
+ 
+        .answer-body h2:first-child { margin-top: 0; }
+        .answer-body p { margin-bottom: 10px; }
+ 
+        .sources-section { margin-top: 22px; }
+ 
+        .sources-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+ 
+        .source-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            transition: border-color 0.15s;
+        }
+ 
+        .source-card:hover { border-color: var(--border-light); }
+ 
+        .source-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 3px;
+        }
+ 
+        .source-snippet {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            max-width: 460px;
+        }
+ 
+        .source-score {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+            padding: 4px 10px;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-mid);
+            border-radius: 5px;
+        }
+ 
+        .kb-section {
+            margin-top: 48px;
+            animation: fadeUp 0.5s ease-out 0.18s both;
+        }
+ 
+        .kb-toggle {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+            font-family: 'Inconsolata', monospace;
+        }
+ 
+        .kb-toggle:hover { border-color: var(--border-light); }
+ 
+        .kb-toggle-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+ 
+        .kb-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+ 
+        .kb-count {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+ 
+        .kb-arrow {
+            font-size: 1rem;
+            color: var(--text-dim);
+            transition: transform 0.25s;
+        }
+ 
+        .kb-toggle.open .kb-arrow { transform: rotate(180deg); }
+ 
+        .kb-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out;
+        }
+ 
+        .kb-content.open { max-height: 800px; }
+ 
+        .kb-list { padding: 8px 0; }
+ 
+        .kb-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.1s;
+        }
+ 
+        .kb-item:last-child { border-bottom: none; }
+        .kb-item:hover { background: var(--surface-2); }
+ 
+        .kb-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+ 
+        .kb-item-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+ 
+        .kb-item-cat {
+            padding: 2px 8px;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-mid);
+            border-radius: 3px;
+            color: var(--accent);
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+ 
+        .kb-item-chunks {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+ 
+        .error-msg {
+            display: none;
+            padding: 14px 16px;
+            background: rgba(248, 113, 113, 0.06);
+            border: 1px solid rgba(248, 113, 113, 0.15);
+            border-radius: 8px;
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+ 
+        .error-msg.visible { display: block; }
+ 
+        .footer {
+            margin-top: 48px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+ 
+        .footer a { color: var(--accent); text-decoration: none; opacity: 0.8; }
+        .footer a:hover { text-decoration: underline; opacity: 1; }
+ 
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+ 
+        @keyframes loadSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(430%); }
+        }
+ 
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+ 
+        @media (max-width: 520px) {
+            .header h1 { font-size: 2.4rem; }
+            .container { padding: 40px 16px 32px; }
+            .stats { gap: 12px; flex-wrap: wrap; }
+            .search-input { padding-right: 100px; }
+        }
+    </style>
+</head>
+<body>
+ 
+<div class="vec-bg">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <defs>
+            <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+                <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(255,255,255,0.018)" stroke-width="0.5"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+        <polygon points="120,60 170,10 220,60" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="0.5"/>
+        <polygon points="580,180 640,120 700,180 700,240 640,300 580,240" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+        <circle cx="88%" cy="12%" r="55" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+        <circle cx="88%" cy="12%" r="85" fill="none" stroke="rgba(255,255,255,0.012)" stroke-width="0.5"/>
+        <line x1="0" y1="42%" x2="100%" y2="40%" stroke="rgba(255,255,255,0.012)" stroke-width="0.5"/>
+        <line x1="13%" y1="0" x2="10%" y2="100%" stroke="rgba(255,255,255,0.012)" stroke-width="0.5"/>
+        <polygon points="280,520 320,480 360,520 360,560 320,600 280,560" fill="none" stroke="rgba(255,255,255,0.018)" stroke-width="0.5"/>
+        <rect x="72%" y="68%" width="70" height="70" rx="2" fill="none" stroke="rgba(255,255,255,0.015)" stroke-width="0.5" transform="rotate(20, 76%, 72%)"/>
+    </svg>
+</div>
+ 
+<div class="container">
+    <div class="header">
+        <div class="header-eyebrow">crypto knowledge engine</div>
+        <h1><span class="zero">0x</span>brain</h1>
+        <p class="header-desc">ask anything about crypto protocols. sourced answers from whitepapers and technical docs — no hallucination.</p>
+    </div>
+ 
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-dot" id="apiDot"></div>
+            <span id="apiText">checking...</span>
+        </div>
+        <div class="stat-item"><span id="docCount">— docs</span></div>
+        <div class="stat-item"><span id="chunkCount">— chunks</span></div>
+    </div>
+ 
+    <div class="search-section">
+        <div class="search-box">
+            <input class="search-input" id="queryInput" type="text" placeholder="how do flash loans work on aave?">
+            <button class="search-btn" id="queryBtn" onclick="submitQuery()">QUERY</button>
+        </div>
+        <div class="search-meta">
+            <div class="filter-group">
+                <span>filter:</span>
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">all protocols</option>
+                    <option value="btc">bitcoin</option>
+                    <option value="eth">ethereum</option>
+                    <option value="solana">solana</option>
+                    <option value="defi">defi</option>
+                    <option value="oracle">oracle</option>
+                    <option value="staking">staking</option>
+                </select>
+            </div>
+            <span class="rag-badge">multi-query rag</span>
+        </div>
+    </div>
+ 
+    <div class="loading" id="loading">
+        <div class="loading-text">decomposing query & searching knowledge base...</div>
+        <div class="loading-bar"></div>
+    </div>
+ 
+    <div class="answer-section" id="answerSection">
+        <div class="answer-label">answer</div>
+        <div class="answer-body" id="answerBody"></div>
+        <div class="sources-section">
+            <div class="sources-label">sources</div>
+            <div id="sourcesList"></div>
+        </div>
+    </div>
+ 
+    <div class="error-msg" id="errorMsg"></div>
+ 
+    <div class="kb-section">
+        <div class="kb-toggle" id="kbToggle" onclick="toggleKB()">
+            <div class="kb-toggle-left">
+                <span class="kb-title">Knowledge Base</span>
+                <span class="kb-count" id="kbInfo">loading...</span>
+            </div>
+            <span class="kb-arrow">▾</span>
+        </div>
+        <div class="kb-content" id="kbContent">
+            <div class="kb-list" id="kbList"></div>
+        </div>
+    </div>
+ 
+    <div class="footer">
+        <span>0xbrain v0.1.0</span>
+        <a href="https://x.com/naaku_builds" target="_blank">@naaku_builds</a>
+    </div>
+</div>
+ 
+<script>
+    const API = 'http://localhost:8000';
+ 
+    async function init() {
+        try {
+            const res = await fetch(`${API}/health`);
+            if (res.ok) {
+                document.getElementById('apiDot').classList.add('on');
+                document.getElementById('apiText').textContent = 'online';
+            }
+        } catch {
+            document.getElementById('apiDot').classList.add('off');
+            document.getElementById('apiText').textContent = 'offline';
+        }
+        try {
+            const res = await fetch(`${API}/documents`);
+            const docs = await res.json();
+            const totalChunks = docs.reduce((sum, d) => sum + d.chunk_count, 0);
+            document.getElementById('docCount').textContent = `${docs.length} docs`;
+            document.getElementById('chunkCount').textContent = `${totalChunks} chunks`;
+            document.getElementById('kbInfo').textContent = `${docs.length} protocols · ${totalChunks} chunks`;
+            const list = document.getElementById('kbList');
+            list.innerHTML = docs.map(d => `
+                <div class="kb-item">
+                    <div class="kb-item-left">
+                        <span class="kb-item-name">${d.title}</span>
+                        <span class="kb-item-cat">${d.category}</span>
+                    </div>
+                    <span class="kb-item-chunks">${d.chunk_count} chunks</span>
+                </div>
+            `).join('');
+        } catch {
+            document.getElementById('kbInfo').textContent = 'failed to load';
+        }
+    }
+ 
+    function toggleKB() {
+        const toggle = document.getElementById('kbToggle');
+        const content = document.getElementById('kbContent');
+        toggle.classList.toggle('open');
+        content.classList.toggle('open');
+    }
+ 
+    async function submitQuery() {
+        const input = document.getElementById('queryInput');
+        const question = input.value.trim();
+        if (!question) return;
+        const loading = document.getElementById('loading');
+        const answer = document.getElementById('answerSection');
+        const error = document.getElementById('errorMsg');
+        const category = document.getElementById('categoryFilter').value;
+        loading.classList.add('visible');
+        answer.classList.remove('visible');
+        error.classList.remove('visible');
+        try {
+            const res = await fetch(`${API}/query`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question,
+                    top_k: 5,
+                    category_filter: category || null,
+                }),
+            });
+            if (!res.ok) throw new Error('Query failed');
+            const data = await res.json();
+            loading.classList.remove('visible');
+            answer.classList.add('visible');
+            document.getElementById('answerBody').innerHTML = renderMarkdown(data.answer);
+            const sourcesList = document.getElementById('sourcesList');
+            sourcesList.innerHTML = data.sources.map(s => `
+                <div class="source-card">
+                    <div>
+                        <div class="source-title">${s.title}</div>
+                        <div class="source-snippet">${s.content_snippet}</div>
+                    </div>
+                    <span class="source-score">${(s.relevance_score * 100).toFixed(0)}%</span>
+                </div>
+            `).join('');
+        } catch (err) {
+            loading.classList.remove('visible');
+            error.textContent = err.message || 'Something went wrong';
+            error.classList.add('visible');
+        }
+    }
+ 
+    function renderMarkdown(text) {
+        return text
+            .replace(/## (.*)/g, '<h2>$1</h2>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/^/, '<p>')
+            .replace(/$/, '</p>');
+    }
+ 
+    document.getElementById('queryInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') submitQuery();
+    });
+ 
+    init();
+</script>
+ 
+</body>
+</html>
