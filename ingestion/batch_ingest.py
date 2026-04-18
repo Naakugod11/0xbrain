@@ -27,6 +27,11 @@ SOURCES = [
         "Ethereum Whitepaper",
         "eth",
     ),
+    (
+        "https://solana.com/solana-whitepaper.pdf",
+        "Solana Whitepaper",
+        "solana",
+    ),
 
     # === DeFi Protocols ===
     (
@@ -47,6 +52,18 @@ SOURCES = [
     (
         "https://compound.finance/documents/Compound.Whitepaper.pdf",
         "Compound Whitepaper",
+        "defi",
+    ),
+
+    # === AMM / DEX ===
+    (
+        "https://docs.curve.finance/assets/pdf/whitepaper_stableswap.pdf",
+        "Curve StableSwap Whitepaper",
+        "defi",
+    ),
+    (
+        "https://docs.curve.finance/assets/pdf/whitepaper_cryptoswap.pdf",
+        "Curve CryptoSwap Whitepaper",
         "defi",
     ),
 
