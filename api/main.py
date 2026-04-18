@@ -1,12 +1,30 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from api.routes import router
+from services.vector_store import list_documents
+import subprocess
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # On startup: ingest if knowledge base is empty
+    docs = list_documents()
+    if len(docs) == 0:
+        print("🧠 Knowledge base empty — running batch ingestion...")
+        subprocess.run(["python", "ingestion/batch_ingest.py"], env={"PYTHONPATH": "."})
+        print("🧠 Ingestion complete")
+    else:
+        print(f"🧠 Knowledge base loaded: {len(docs)} docs")
+    yield
+
 
 app = FastAPI(
     title="0xbrain",
-    description="RAG system for crypto knowledge - query whitepapers and protocol docs with sourced AI answers",
+    description="RAG system for crypto knowledge",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -18,6 +36,7 @@ app.add_middleware(
 
 app.include_router(router)
 app.mount("/demo", StaticFiles(directory="frontend", html=True), name="demo")
+
 
 @app.get("/health")
 async def health():
